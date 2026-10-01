@@ -1,0 +1,62 @@
+# Parametres du projet
+# Modifier ce fichier plutot que le code.
+
+projet:
+  nom: "Aide a la lecture des candidatures DataCamp Donates"
+  organisation: "TDEV"
+  version: "1.0"
+
+donnees:
+  dossier: "data"
+  fichiers_entrainement:
+    - "anonymise_vague_janv24.csv"
+    - "anonymise_vague_janv25.csv"
+  colonne_cible: "cible_selectionne"
+  colonne_identifiant: "identifiant"
+
+modele:
+  algorithme: "regression logistique reguliere"
+  regularisation_C: 0.5
+  ponderation_classes: "balanced"
+  graine: 42
+  nb_termes_tfidf: 40
+  frequence_minimale_tfidf: 15
+  variables_exclues:
+    - "genre"
+    - "indicateur de vague"
+  chemin_artefact: "modele/modele_selection.joblib"
+
+quotas:
+  # Appliques apres le classement, jamais appris par le modele.
+  actifs_par_defaut: true
+  part_minimale_femmes: 40
+  part_minimale_togo: 30
+  commentaire_togo: >
+    La valeur historique de 55 pour cent a ete calibree sur un vivier
+    compose a 62 pour cent de candidats togolais. Ce vivier n'en compte
+    plus que 30 pour cent. La valeur doit etre recalibree a chaque vague.
+
+base_de_donnees:
+  moteur: "sqlite"
+  chemin: "sql/datacamp.db"
+  export: "sql/datacamp_dump.sql"
+  index:
+    - "idx_candidature_empreinte"
+    - "idx_membre_empreinte"
+
+application:
+  port: 8501
+  taille_texte_par_defaut: 16
+  conservation_des_donnees: "aucune, traitement en memoire"
+
+acces:
+  # Les mots de passe ne sont pas stockes en clair : seul leur hachage
+  # SHA-256 figure ici. Voir le fichier README pour les identifiants de test
+  # et la procedure de changement.
+  comptes:
+    - identifiant: "lecteur"
+      role: "lecteur"
+      empreinte: "216e8f0bcc088e0736cb6659d079e758ae3344c7cfad368479707991587d0084"
+    - identifiant: "admin"
+      role: "administrateur"
+      empreinte: "8ef95be7af9f77ff3567198efea4e40d0485f53502079f8432462bbff2439fd7"

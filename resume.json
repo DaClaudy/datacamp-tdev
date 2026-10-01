@@ -1,0 +1,13 @@
+{
+  "taux_de_base": 0.21910112359550563,
+  "effectif_entrainement": 1246,
+  "retenus_entrainement": 273,
+  "auc_moyen": 0.556201480484642,
+  "auc_bas": 0.4896474659361257,
+  "auc_haut": 0.6374851519868702,
+  "vagues": [
+    "janv24",
+    "janv25"
+  ],
+  "version": "1.0"
+}

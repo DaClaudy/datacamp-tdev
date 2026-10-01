@@ -1,0 +1,26 @@
+# Configuration de l'application
+# Le theme reste sobre et contraste. Un mode contraste renforce est
+# disponible dans la barre laterale de l'application.
+
+[theme]
+base = "light"
+primaryColor = "#D96C3B"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F2F4F7"
+textColor = "#1B2A41"
+font = "sans serif"
+
+[server]
+headless = true
+port = 8501
+address = "0.0.0.0"
+maxUploadSize = 50
+enableCORS = false
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+showErrorDetails = false
+toolbarMode = "minimal"

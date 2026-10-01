@@ -20,7 +20,7 @@ import streamlit as st
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as reglages
 
-CHEMIN_CONFIG = os.path.join(reglages.RACINE, "config.yaml")
+CHEMIN_CONFIG = reglages.CHEMIN_COMPTES
 
 
 # Comptes de secours si le fichier de configuration est absent

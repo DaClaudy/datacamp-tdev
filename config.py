@@ -8,8 +8,32 @@ import os
 
 
 # Racine du projet
-# Ce fichier est dans src/, la racine est donc le dossier parent.
-RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Le code fonctionne de deux facons : avec les fichiers ranges dans src/, ou
+# avec tous les fichiers a plat dans un meme dossier. On regarde simplement
+# comment s'appelle le dossier qui contient ce fichier.
+DOSSIER_CODE = os.path.dirname(os.path.abspath(__file__))
+
+if os.path.basename(DOSSIER_CODE).lower() == "src":
+    RACINE = os.path.dirname(DOSSIER_CODE)
+else:
+    RACINE = DOSSIER_CODE
+
+
+def trouver(nom, sous_dossiers=None):
+    """Cherche un fichier dans les sous-dossiers habituels, puis a plat.
+
+    Retourne le chemin trouve, ou None. Cela permet au projet de fonctionner
+    que les fichiers soient ranges par dossiers ou tous au meme niveau.
+    """
+    candidats = []
+    for sous in (sous_dossiers or []):
+        candidats.append(os.path.join(RACINE, sous, nom))
+    candidats.append(os.path.join(RACINE, nom))
+    candidats.append(os.path.join(DOSSIER_CODE, nom))
+    for chemin in candidats:
+        if os.path.exists(chemin):
+            return os.path.normpath(chemin)
+    return None
 
 
 # Dossiers ou chercher les fichiers de candidature
@@ -17,6 +41,7 @@ RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Ajoute ici tes propres dossiers si tes donnees sont ailleurs.
 DOSSIERS_DONNEES = [
     os.path.join(RACINE, "data"),
+    RACINE,
     os.path.join(RACINE, "donnees"),
     os.path.join(RACINE, "data_brutes"),
     os.path.join(RACINE, "..", "data"),
@@ -39,11 +64,17 @@ DOSSIER_SORTIES = os.path.join(RACINE, "sorties")
 
 
 # Fichiers produits
-CHEMIN_MODELE = os.path.join(DOSSIER_MODELE, "modele_selection.joblib")
+# En lecture on cherche le fichier la ou il est. En ecriture on utilise le
+# chemin par defaut, dans le sous-dossier prevu.
+CHEMIN_MODELE = (trouver("modele_selection.joblib", ["modele"])
+                 or os.path.join(DOSSIER_MODELE, "modele_selection.joblib"))
 CHEMIN_COEFFICIENTS = os.path.join(DOSSIER_MODELE, "coefficients.csv")
 CHEMIN_RESUME = os.path.join(DOSSIER_MODELE, "resume.json")
-CHEMIN_BASE = os.path.join(DOSSIER_SQL, "datacamp.db")
+CHEMIN_BASE = (trouver("datacamp.db", ["sql"])
+               or os.path.join(DOSSIER_SQL, "datacamp.db"))
 CHEMIN_DUMP = os.path.join(DOSSIER_SQL, "datacamp_dump.sql")
+CHEMIN_COMPTES = trouver("config.yaml") or os.path.join(RACINE, "config.yaml")
+CHEMIN_EXEMPLE = trouver("exemple_candidatures.csv", ["exemple"])
 
 
 # Colonnes attendues dans les fichiers de candidature

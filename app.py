@@ -36,11 +36,14 @@ import acces
 
 # Chemins et chiffres affiches, tous definis dans config.py
 CHEMIN_MODELE = config.CHEMIN_MODELE
+# On lit les chiffres dans config.py, avec des valeurs de repli : une version
+# desynchronisee du fichier de configuration ne doit pas faire tomber la page.
+_mesures = getattr(config, "PERFORMANCE", {})
 GAIN_MESURE = {
-    "auc": config.PERFORMANCE["auc"],
-    "intervalle": config.PERFORMANCE["intervalle"],
-    "decile": config.PERFORMANCE["gain_premier_decile"],
-    "lecture_en_moins": config.PERFORMANCE["lecture_en_moins"],
+    "auc": _mesures.get("auc", 0.572),
+    "intervalle": _mesures.get("intervalle", "0,49 a 0,64"),
+    "decile": _mesures.get("gain_premier_decile", 1.62),
+    "lecture_en_moins": _mesures.get("lecture_en_moins", 16),
 }
 
 st.set_page_config(page_title="Lecture des candidatures TDEV",
@@ -383,14 +386,15 @@ elif page.startswith("2"):
                    "discriminant modeste, ce qui correspond a la performance "
                    "mesuree.")
     with droite:
-        st.altair_chart(graphiques.courbe_de_gain(config.COURBE_DE_GAIN),
+        courbe = getattr(config, "COURBE_DE_GAIN", None) or graphiques.COURBE_DE_SECOURS
+        st.altair_chart(graphiques.courbe_de_gain(courbe),
                         use_container_width=True)
         st.caption("Lecture : en lisant la moitie des dossiers dans l'ordre "
                    "propose, le comite trouve 58 pour cent des laureats, "
                    "contre 50 pour cent en lisant dans l'ordre d'arrivee.")
 
     with st.expander("Voir les chiffres de la courbe de gain"):
-        st.dataframe(pd.DataFrame(config.COURBE_DE_GAIN).rename(columns={
+        st.dataframe(pd.DataFrame(courbe).rename(columns={
             "part_lue": "Dossiers lus, en pour cent",
             "part_trouvee": "Laureats trouves, en pour cent"}),
             use_container_width=True, hide_index=True)
@@ -434,10 +438,10 @@ elif page.startswith("3"):
                                   min_value=1, max_value=len(table),
                                   value=min(200, len(table)), step=10)
     part_femmes = col2.slider("Part minimale de candidates en pour cent",
-                              0, 100, config.QUOTA_FEMMES_DEFAUT, step=5,
+                              0, 100, getattr(config, "QUOTA_FEMMES_DEFAUT", 40), step=5,
                               help="Critere de priorisation numero 1 de TDEV.")
     part_togo = col3.slider("Part minimale de candidats togolais en pour cent",
-                            0, 100, config.QUOTA_TOGO_DEFAUT, step=5,
+                            0, 100, getattr(config, "QUOTA_TOGO_DEFAUT", 30), step=5,
                             help="A recalibrer sur la composition du vivier "
                                  "de chaque vague.")
     actif = st.checkbox("Appliquer les quotas", value=True)

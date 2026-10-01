@@ -24,6 +24,35 @@ GRILLE = "#e4e7ec"
 HAUTEUR = 260
 
 
+# Courbe de gain de secours
+# Les memes valeurs que celles de config.py. Elles sont repetees ici pour que
+# la figure s'affiche meme si config.py n'a pas ete mis a jour en meme temps
+# que ce fichier. Une version desynchronisee ne doit pas faire tomber la page.
+COURBE_DE_SECOURS = [
+    {"part_lue": 0, "part_trouvee": 0.0},
+    {"part_lue": 5, "part_trouvee": 6.3},
+    {"part_lue": 10, "part_trouvee": 16.2},
+    {"part_lue": 15, "part_trouvee": 20.9},
+    {"part_lue": 20, "part_trouvee": 24.6},
+    {"part_lue": 25, "part_trouvee": 31.4},
+    {"part_lue": 30, "part_trouvee": 37.2},
+    {"part_lue": 35, "part_trouvee": 43.5},
+    {"part_lue": 40, "part_trouvee": 48.7},
+    {"part_lue": 45, "part_trouvee": 52.9},
+    {"part_lue": 50, "part_trouvee": 58.1},
+    {"part_lue": 55, "part_trouvee": 63.4},
+    {"part_lue": 60, "part_trouvee": 69.1},
+    {"part_lue": 65, "part_trouvee": 72.8},
+    {"part_lue": 70, "part_trouvee": 77.0},
+    {"part_lue": 75, "part_trouvee": 82.7},
+    {"part_lue": 80, "part_trouvee": 86.9},
+    {"part_lue": 85, "part_trouvee": 90.6},
+    {"part_lue": 90, "part_trouvee": 94.2},
+    {"part_lue": 95, "part_trouvee": 96.9},
+    {"part_lue": 100, "part_trouvee": 100.0}
+]
+
+
 def _base(figure, titre, sous_titre=None):
     """Habillage commun : titre, grille discrete, pas de cadre."""
     return figure.properties(
@@ -79,8 +108,10 @@ def distribution_des_scores(scores, seuil=None):
 
 
 # Figure 2 : ce que l'ordre de lecture fait gagner
-def courbe_de_gain(courbe):
+def courbe_de_gain(courbe=None):
     """Part des laureats trouves selon la part de dossiers lus."""
+    if not courbe:
+        courbe = COURBE_DE_SECOURS
     outil = pd.DataFrame(courbe)
     outil["lecture"] = "Dans l'ordre propose par l'outil"
     hasard = pd.DataFrame({"part_lue": [0, 100], "part_trouvee": [0, 100]})

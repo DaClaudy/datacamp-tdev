@@ -30,6 +30,7 @@ import streamlit as st
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config
+import graphiques
 import variables
 import acces
 
@@ -372,6 +373,28 @@ elif page.startswith("2"):
         + " pour cent de lecture en moins qu'en lisant dans l'ordre d'arrivee. "
           "Ce chiffre est mesure hors echantillon sur la vague de janvier 2025.")
 
+    gauche, droite = st.columns(2)
+    with gauche:
+        st.altair_chart(graphiques.distribution_des_scores(score),
+                        use_container_width=True)
+        st.caption("Lecture : les scores se repartissent autour du milieu de "
+                   "l'echelle, avec peu de dossiers tres bien ou tres mal "
+                   "classes. C'est la signature d'un modele au pouvoir "
+                   "discriminant modeste, ce qui correspond a la performance "
+                   "mesuree.")
+    with droite:
+        st.altair_chart(graphiques.courbe_de_gain(config.COURBE_DE_GAIN),
+                        use_container_width=True)
+        st.caption("Lecture : en lisant la moitie des dossiers dans l'ordre "
+                   "propose, le comite trouve 58 pour cent des laureats, "
+                   "contre 50 pour cent en lisant dans l'ordre d'arrivee.")
+
+    with st.expander("Voir les chiffres de la courbe de gain"):
+        st.dataframe(pd.DataFrame(config.COURBE_DE_GAIN).rename(columns={
+            "part_lue": "Dossiers lus, en pour cent",
+            "part_trouvee": "Laureats trouves, en pour cent"}),
+            use_container_width=True, hide_index=True)
+
     st.subheader("Classement complet")
     st.dataframe(table, use_container_width=True, height=440)
     st.caption("Classement par score decroissant. Le score est une estimation "
@@ -427,6 +450,15 @@ elif page.startswith("3"):
     st.caption("La colonne motif indique pourquoi chaque dossier figure dans "
                "la liste : par son score, ou au titre d'un quota.")
 
+    gauche, droite = st.columns([1, 1])
+    with gauche:
+        st.altair_chart(graphiques.origine_des_retenus(selection),
+                        use_container_width=True)
+    with droite:
+        seuil = float(selection["score"].min()) if len(selection) else None
+        st.altair_chart(graphiques.distribution_des_scores(
+            table["score"].values, seuil=seuil), use_container_width=True)
+
     st.subheader("Composition comparee")
     st.markdown("Un ecart important signale que la liste ne ressemble pas au "
                 "vivier sur ce critere. Ce n'est pas necessairement un "
@@ -434,8 +466,11 @@ elif page.startswith("3"):
 
     for colonne, libelle in [("genre", "Genre declare"), ("pays", "Pays")]:
         comparaison = tableau_composition(table, selection, colonne, libelle)
-        st.markdown("**" + libelle + "**")
-        st.dataframe(comparaison, use_container_width=True)
+        st.altair_chart(
+            graphiques.composition_comparee(table, selection, colonne, libelle),
+            use_container_width=True)
+        with st.expander("Voir les chiffres : " + libelle.lower()):
+            st.dataframe(comparaison, use_container_width=True)
 
     if actif:
         part_obtenue = (selection["genre"] == "Femme").mean() * 100

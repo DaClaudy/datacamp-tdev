@@ -151,3 +151,33 @@ def verifier_donnees():
         print("\nAjoute le bon dossier dans DOSSIERS_DONNEES, fichier src/config.py")
         raise SystemExit()
     return trouves
+
+
+# Courbe de gain de reference
+# Mesuree hors echantillon sur la vague de janvier 2025, modele sans indicateur
+# de vague. Elle sert de repere dans l'application : elle dit combien de
+# laureats on trouve en lisant une part donnee des dossiers, dans l'ordre
+# propose par l'outil. La diagonale correspond a une lecture au hasard.
+COURBE_DE_GAIN = [
+    {"part_lue": 0, "part_trouvee": 0.0},
+    {"part_lue": 5, "part_trouvee": 6.3},
+    {"part_lue": 10, "part_trouvee": 16.2},
+    {"part_lue": 15, "part_trouvee": 20.9},
+    {"part_lue": 20, "part_trouvee": 24.6},
+    {"part_lue": 25, "part_trouvee": 31.4},
+    {"part_lue": 30, "part_trouvee": 37.2},
+    {"part_lue": 35, "part_trouvee": 43.5},
+    {"part_lue": 40, "part_trouvee": 48.7},
+    {"part_lue": 45, "part_trouvee": 52.9},
+    {"part_lue": 50, "part_trouvee": 58.1},
+    {"part_lue": 55, "part_trouvee": 63.4},
+    {"part_lue": 60, "part_trouvee": 69.1},
+    {"part_lue": 65, "part_trouvee": 72.8},
+    {"part_lue": 70, "part_trouvee": 77.0},
+    {"part_lue": 75, "part_trouvee": 82.7},
+    {"part_lue": 80, "part_trouvee": 86.9},
+    {"part_lue": 85, "part_trouvee": 90.6},
+    {"part_lue": 90, "part_trouvee": 94.2},
+    {"part_lue": 95, "part_trouvee": 96.9},
+    {"part_lue": 100, "part_trouvee": 100.0}
+]

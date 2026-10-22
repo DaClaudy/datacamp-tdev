@@ -141,7 +141,7 @@ def verifier_donnees():
     """Affiche un diagnostic et arrete le script si des fichiers manquent."""
     trouves, manquants = fichiers_entrainement()
     if manquants:
-        print("Fichiers de donnees introuvables :")
+        print("Fichiers de données introuvables :")
         for nom in manquants:
             print("   ", nom)
         print("\nDossiers explores :")

@@ -2,7 +2,7 @@
 #
 # Toutes les figures sont construites avec Altair, deja fourni par Streamlit.
 # Trois regles tenues partout :
-#   - une seule echelle par figure, jamais deux axes verticaux
+#   - une seule échelle par figure, jamais deux axes verticaux
 #   - la couleur ne porte jamais seule l'information : chaque serie est aussi
 #     nommee dans une legende et, quand c'est lisible, etiquetee directement
 #   - chaque figure est accompagnee du tableau de chiffres correspondant, ce
@@ -89,51 +89,51 @@ def distribution_des_scores(scores, seuil=None):
         color=BLEU, cornerRadiusTopLeft=3, cornerRadiusTopRight=3
     ).encode(
         x=alt.X("score:Q", bin=alt.Bin(maxbins=30),
-                title="Score attribue par le modele"),
+                title="Score attribué par le modèle"),
         y=alt.Y("count():Q", title="Nombre de candidatures"),
         tooltip=[alt.Tooltip("count():Q", title="Candidatures"),
                  alt.Tooltip("score:Q", bin=alt.Bin(maxbins=30), title="Score")],
     )
 
     if seuil is None:
-        return _base(barres, "Repartition des scores",
-                     "Chaque barre compte les candidatures d'un meme niveau de score")
+        return _base(barres, "Répartition des scores",
+                     "Chaque barre compte les candidatures d'un même niveau de score")
 
     trait = alt.Chart(pd.DataFrame({"seuil": [seuil]})).mark_rule(
         color=ORANGE, strokeWidth=2, strokeDash=[5, 3]
     ).encode(x="seuil:Q")
 
-    return _base(barres + trait, "Repartition des scores",
+    return _base(barres + trait, "Répartition des scores",
                  "Le trait orange marque le score du dernier dossier retenu")
 
 
 # Figure 2 : ce que l'ordre de lecture fait gagner
 def courbe_de_gain(courbe=None):
-    """Part des laureats trouves selon la part de dossiers lus."""
+    """Part des lauréats trouvés selon la part de dossiers lus."""
     if not courbe:
         courbe = COURBE_DE_SECOURS
     outil = pd.DataFrame(courbe)
-    outil["lecture"] = "Dans l'ordre propose par l'outil"
+    outil["lecture"] = "Dans l'ordre proposé par l'outil"
     hasard = pd.DataFrame({"part_lue": [0, 100], "part_trouvee": [0, 100]})
-    hasard["lecture"] = "Dans l'ordre d'arrivee"
+    hasard["lecture"] = "Dans l'ordre d'arrivée"
     table = pd.concat([outil, hasard], ignore_index=True)
 
     couleurs = alt.Scale(
-        domain=["Dans l'ordre propose par l'outil", "Dans l'ordre d'arrivee"],
+        domain=["Dans l'ordre proposé par l'outil", "Dans l'ordre d'arrivée"],
         range=[BLEU, ORANGE])
 
     lignes = alt.Chart(table).mark_line(strokeWidth=2, point=False).encode(
         x=alt.X("part_lue:Q", title="Part des dossiers lus, en pour cent",
                 scale=alt.Scale(domain=[0, 100], nice=False)),
-        y=alt.Y("part_trouvee:Q", title="Part des laureats trouves, en pour cent",
+        y=alt.Y("part_trouvee:Q", title="Part des lauréats trouvés, en pour cent",
                 scale=alt.Scale(domain=[0, 100], nice=False)),
         color=alt.Color("lecture:N", scale=couleurs, title=None,
                         legend=alt.Legend(orient="top")),
         strokeDash=alt.StrokeDash(
             "lecture:N", title=None, legend=None,
             scale=alt.Scale(
-                domain=["Dans l'ordre propose par l'outil",
-                        "Dans l'ordre d'arrivee"],
+                domain=["Dans l'ordre proposé par l'outil",
+                        "Dans l'ordre d'arrivée"],
                 range=[[1, 0], [6, 4]])),
     )
 
@@ -142,7 +142,7 @@ def courbe_de_gain(courbe=None):
         size=70, filled=True, color=BLEU, stroke="white", strokeWidth=2
     ).encode(x="part_lue:Q", y="part_trouvee:Q",
              tooltip=[alt.Tooltip("part_lue:Q", title="Dossiers lus, %"),
-                      alt.Tooltip("part_trouvee:Q", title="Laureats trouves, %")])
+                      alt.Tooltip("part_trouvee:Q", title="Lauréats trouvés, %")])
 
     textes = alt.Chart(reperes).mark_text(
         align="left", dx=8, dy=-8, color=ENCRE, fontSize=11
@@ -151,7 +151,7 @@ def courbe_de_gain(courbe=None):
 
     return _base(lignes + points + textes,
                  "Ce que l'ordre de lecture fait gagner",
-                 "Mesure hors echantillon sur la vague de janvier 2025")
+                 "Mesuré hors échantillon sur la vague de janvier 2025")
 
 
 # Figure 3 : la liste retenue ressemble-t-elle au vivier
@@ -169,11 +169,11 @@ def composition_comparee(table_vivier, table_liste, colonne, libelle, maximum=6)
     for modalite in gardees:
         lignes.append({"modalite": str(modalite), "ensemble": "Vivier complet",
                        "part": round(float(vivier.get(modalite, 0)), 1)})
-        lignes.append({"modalite": str(modalite), "ensemble": "Liste proposee",
+        lignes.append({"modalite": str(modalite), "ensemble": "Liste proposée",
                        "part": round(float(liste.get(modalite, 0)), 1)})
     table = pd.DataFrame(lignes)
 
-    couleurs = alt.Scale(domain=["Vivier complet", "Liste proposee"],
+    couleurs = alt.Scale(domain=["Vivier complet", "Liste proposée"],
                          range=[GRIS, BLEU])
 
     barres = alt.Chart(table).mark_bar(
@@ -183,7 +183,7 @@ def composition_comparee(table_vivier, table_liste, colonne, libelle, maximum=6)
                 axis=alt.Axis(labelLimit=180)),
         x=alt.X("part:Q", title="Part en pour cent"),
         yOffset=alt.YOffset("ensemble:N",
-                            sort=["Vivier complet", "Liste proposee"]),
+                            sort=["Vivier complet", "Liste proposée"]),
         color=alt.Color("ensemble:N", scale=couleurs, title=None,
                         legend=alt.Legend(orient="top")),
         tooltip=[alt.Tooltip("modalite:N", title=libelle),
@@ -197,19 +197,19 @@ def composition_comparee(table_vivier, table_liste, colonne, libelle, maximum=6)
         y=alt.Y("modalite:N", sort=gardees),
         x="part:Q",
         yOffset=alt.YOffset("ensemble:N",
-                            sort=["Vivier complet", "Liste proposee"]),
+                            sort=["Vivier complet", "Liste proposée"]),
         text=alt.Text("part:Q", format=".0f"),
     )
 
     hauteur = max(170, 42 * len(gardees))
     figure = (barres + valeurs).properties(height=hauteur)
-    return _base(figure, "Composition comparee : " + libelle.lower(),
-                 "Un ecart important ne signale pas une erreur, mais merite d'etre su")
+    return _base(figure, "Composition comparée : " + libelle.lower(),
+                 "Un écart important ne signale pas une erreur, mais mérite d'être su")
 
 
 # Figure 4 : d'ou viennent les dossiers de la liste
 def origine_des_retenus(selection):
-    """Repartition de la liste entre le score et les quotas."""
+    """Répartition de la liste entre le score et les quotas."""
     comptes = selection["motif"].value_counts()
     table = pd.DataFrame({"motif": comptes.index.astype(str),
                           "nombre": comptes.values})

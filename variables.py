@@ -78,15 +78,15 @@ ECHELLE_TEMOIGNAGE = {"non": 0, "peut-etre": 1, "oui": 2}
 # Niveau d'etudes des parents, du plus eleve au plus bas
 NIVEAUX_PARENTS = [(["doctorat"], 6), (["ma, ms"], 5), (["licence (ba"], 4),
                    (["d'associe"], 3), (["enseignement secondaire"], 2),
-                   (["aucun de ces diplomes"], 1)]
+                   (["aucun de ces diplômes"], 1)]
 
 
 # Les quatre questions redactionnelles du formulaire
 CHAMPS_LIBRES = {
     "sujets": ["sujets, les competences"],
     "objectifs": ["objectifs personn"],
-    "merite": ["pourquoi meritez-vous"],
-    "defis": ["defis personnels ou professionnels"]
+    "merite": ["pourquoi méritez-vous"],
+    "defis": ["défis personnels ou professionnels"]
 }
 
 
@@ -139,10 +139,10 @@ def deduire_pays(valeur):
 # Il sert a l'audit d'equite et a l'application des quotas.
 def extraire_genre(donnees):
     """Renvoye a part, jamais comme variable du modele."""
-    nom = colonne_contenant(donnees, ["options vous decrit le mieux"])
+    nom = colonne_contenant(donnees, ["options vous décrit le mieux"])
     if nom is None:
-        return pd.Series("Non renseigne", index=donnees.index)
-    return donnees[nom].fillna("Non renseigne")
+        return pd.Series("Non renseigné", index=donnees.index)
+    return donnees[nom].fillna("Non renseigné")
 
 
 def extraire_pays(donnees):
@@ -176,11 +176,11 @@ def construire_structurelles(donnees):
     situations = {
         "sans_emploi": ["cases qui s", "(sans emploi)"],
         "sous_emploi": ["cases qui s", "sous-employe"],
-        "sous_seuil_pauvrete": ["cases qui s", "seuil de pauvrete"],
+        "sous_seuil_pauvrete": ["cases qui s", "seuil de pauvreté"],
         "refugie": ["cases qui s", "refugie"],
         "handicap_ou_defavorise": ["cases qui s", "handicapee"],
         "etudiant_16_26": ["cases qui s", "16 a 26"],
-        "donnees_env_sante": ["cases qui s", "environnement et la sante"],
+        "donnees_env_sante": ["cases qui s", "environnement et la santé"],
         "aucune_categorie": ["cases qui s", "aucune de ces categories"]
     }
     noms = []
@@ -190,13 +190,13 @@ def construire_structurelles(donnees):
         noms.append("sit_" + c)
     x["sit_nombre"] = x[noms].sum(axis=1)
 
-    nom = colonne_contenant(donnees, ["telecharger ici tout document"])
+    nom = colonne_contenant(donnees, ["télécharger ici tout document"])
     x["doc_justificatif"] = donnees[nom].notna().astype(int) if nom else 0
 
     nom = colonne_contenant(donnees, ["type d", "internet utiliserez"])
-    internet = donnees[nom].fillna("Non renseigne") if nom else pd.Series(
-        "Non renseigne", index=donnees.index)
-    for valeur in ["Mon propre Internet", "Wi-Fi public/ecole", "Donnees mobiles",
+    internet = donnees[nom].fillna("Non renseigné") if nom else pd.Series(
+        "Non renseigné", index=donnees.index)
+    for valeur in ["Mon propre Internet", "Wi-Fi public/école", "Données mobiles",
                    "Internet d'un ami", "Je ne suis pas sur"]:
         x["net_" + cle(valeur)[:22]] = (
             internet.map(sans_accent) == sans_accent(valeur)).astype(int)
@@ -214,14 +214,14 @@ def construire_structurelles(donnees):
         noms.append("app_" + c)
     x["app_nombre"] = x[noms].sum(axis=1)
 
-    nom = colonne_contenant(donnees, ["deja suivi un cours ou une piste"])
+    nom = colonne_contenant(donnees, ["déjà suivi un cours ou une piste"])
     x["deja_datacamp"] = donnees[nom].notna().astype(int) if nom else 0
     nom = colonne_contenant(donnees, ["titre du poste"])
     x["a_un_poste"] = donnees[nom].notna().astype(int) if nom else 0
     nom = colonne_contenant(donnees, ["employeur (si vous"])
     x["a_un_employeur"] = donnees[nom].notna().astype(int) if nom else 0
 
-    nom = colonne_contenant(donnees, ["carriere academique"])
+    nom = colonne_contenant(donnees, ["carrière academique"])
     if nom is not None:
         niveau = donnees[nom].fillna("").map(
             lambda v: ECHELLE_ACADEMIQUE.get(sans_accent(v).lower().strip(), np.nan))
@@ -229,7 +229,7 @@ def construire_structurelles(donnees):
     else:
         x["avancement_academique"] = 3
 
-    nom = colonne_contenant(donnees, ["types d", "aide financiere dont vous"])
+    nom = colonne_contenant(donnees, ["types d", "aide financière dont vous"])
     aide = donnees[nom].fillna("") if nom else pd.Series("", index=donnees.index)
     x["aide_aucune"] = aide.map(lambda v: 1 if "aucun" in sans_accent(v).lower() else 0)
     x["aide_nombre"] = aide.map(
@@ -245,7 +245,7 @@ def construire_structurelles(donnees):
             parents = np.maximum(parents, binaire(donnees[nom]) * valeur)
     x["parents_niveau"] = parents
 
-    nom = colonne_contenant(donnees, ["echelle de 1 a 5"])
+    nom = colonne_contenant(donnees, ["échelle de 1 a 5"])
     if nom is not None:
         niveau = pd.to_numeric(donnees[nom], errors="coerce")
         x["niveau_datascience"] = niveau.fillna(niveau.median() if niveau.notna().any() else 2)
@@ -260,7 +260,7 @@ def construire_structurelles(donnees):
     else:
         x["temps_hebdo"] = 3
 
-    nom = colonne_contenant(donnees, ["temoignage de 3 a 5 phrases"])
+    nom = colonne_contenant(donnees, ["témoignage de 3 a 5 phrases"])
     if nom is not None:
         t = donnees[nom].fillna("").map(
             lambda v: ECHELLE_TEMOIGNAGE.get(sans_accent(v).lower().strip(), np.nan))
